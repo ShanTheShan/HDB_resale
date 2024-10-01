@@ -10,6 +10,7 @@ app.engine('html', mustacheExpress());
 app.set('view engine', 'html');
 app.set('views', './');
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('images'));
 
 var database = mysql.createConnection({
     host: 'localhost',
@@ -31,15 +32,30 @@ app.get('/', function (req, res) {
 })
 
 app.get('/yearly', function (req, res) {
-    query_Q1 = `SELECT YEAR(sale_info.date_sold) AS sale_year,
-    MIN(sales.price) AS lowest_sale_price,
-    MAX(sales.price) AS highest_sale_price
-    FROM sale_info JOIN sales ON
-    sale_info.sale_info_id = sales.sale_id
-    GROUP BY sale_year;`
-    
-    database.query(query_Q1, renderHTML('yearly', res));
-})
+    const query_Q1 = `SELECT YEAR(sale_info.date_sold) AS sale_year,
+                      MIN(sales.price) AS lowest_sale_price,
+                      MAX(sales.price) AS highest_sale_price
+                      FROM sale_info 
+                      JOIN sales ON sale_info.sale_info_id = sales.sale_id
+                      GROUP BY sale_year;`;    
+
+    database.query(query_Q1, (error, results) => {
+        if (error) {
+            return res.status(500).send("Database query failed");
+        }
+
+        // Format the sale prices with commas
+        const formattedResults = results.map(row => ({
+            sale_year: row.sale_year,
+            lowest_sale_price: row.lowest_sale_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+            highest_sale_price: row.highest_sale_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+        }));
+
+        // Render the HTML with formatted data
+        res.render('yearly', { data: formattedResults });
+    });
+});
+
 
 app.get('/town', function (req, res) {
     query_Q2 = `SELECT location.town, MIN(price) AS lowest, MAX(price) as highest,
@@ -51,7 +67,23 @@ app.get('/town', function (req, res) {
                 GROUP BY location.town;`
 
     
-    database.query(query_Q2, renderHTML('town', res));
+                database.query(query_Q2, (error, results) => {
+                    if (error) {
+                        return res.status(500).send("Database query failed");
+                    }
+            
+                    // Format the sale prices with commas
+                    const formattedResults = results.map(row => ({
+                        town: row.town,
+                        lowest: row.lowest.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+                        highest: row.highest.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+                        average: row.average.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+                        standard_deviation:row.standard_deviation.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }));
+            
+                    // Render the HTML with formatted data
+                    res.render('town', { data: formattedResults });
+                });
 })
 
 app.get('/common', function (req, res) {
@@ -78,7 +110,21 @@ app.get('/lease', function (req, res) {
     )
     SELECT lease, total_sum, average FROM LeaseInfluence;`
 
-    database.query(query_Q4, renderHTML('lease', res));
+    database.query(query_Q4, (error, results) => {
+        if (error) {
+            return res.status(500).send("Database query failed");
+        }
+
+        // Format the sale prices with commas
+        const formattedResults = results.map(row => ({
+            lease: row.lease,
+            total_sum: row.total_sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+            average: row.average.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+        }));
+
+        // Render the HTML with formatted data
+        res.render('lease', { data: formattedResults });
+    });
 })
 
 app.listen(port, function () {

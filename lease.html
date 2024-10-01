@@ -22,19 +22,13 @@
         <h2 class="pt-3 mt-3">Lease Left and Price</h2>
 
             <div class="d-flex justify-content-center pt-3 mt-3">
-            <style>
-                table, th, td {
-                    border: 1px solid black;
-                    border-collapse:collapse;
-                    padding:10px;
-                }
-                </style>
-                <table style="width: 70%">
+                <table class="table table-secondary table-striped table-bordered">
                     <tr>
-                        <th>Years Left</th>
-                        <th>Total Sales($)</th>
-                        <th>Average Sales($)</th>
+                        <th scope="col">Years Left</th>
+                        <th scope="col">Total Sales ($)</th>
+                        <th scope="col">Average Sales ($)</th>
                     </tr>
+                    <tbody class="table-group-divider">
                     {{#data}}
                     <tr>
                         <td style="text-align: center">{{lease}}</td>
@@ -42,6 +36,7 @@
                         <td style="text-align: center">{{average}}</td>
                     </tr>
                     {{/data}}
+                </tbody>
                 </table>
             </div>
         </div>

@@ -22,21 +22,15 @@
         <h2 class="pt-3 mt-3">Resale Price by Town</h2>
 
             <div class="d-flex justify-content-center pt-3 mt-3">
-            <style>
-                table, th, td {
-                    border: 1px solid black;
-                    border-collapse:collapse;
-                    padding:10px;
-                }
-                </style>
-            <table style="width: 70%">
+            <table class="table table-secondary table-striped table-bordered">
                 <tr>
-                    <th>Town</th>
-                    <th>Lowest Sale($)</th>
-                    <th>Highest Sale($)</th>
-                    <th>Average Sale($)</th>
-                    <th>Standard Deviation</th>
+                    <th scope="col">Town</th>
+                    <th scope="col">Lowest Sale ($)</th>
+                    <th scope="col">Highest Sale ($)</th>
+                    <th scope="col">Average Sale ($)</th>
+                    <th scope="col">Standard Deviation</th>
                 </tr>
+                <tbody class="table-group-divider">
                 {{#data}}
                 <tr>
                     <td style="text-align: center">{{town}}</td>
@@ -46,6 +40,7 @@
                     <td style="text-align: center">{{standard_deviation}}</td>
                 </tr>
                 {{/data}}
+            </tbody>
             </table>
             </div>
         </div>
